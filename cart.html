@@ -1,0 +1,128 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Your Cart — Zanova</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    @font-face {
+      font-family: 'Sesbania';
+      src: url('assets/images/sesbania-regular.ttf') format('truetype');
+      font-weight: 400;
+      font-style: normal;
+      font-display: swap;
+    }
+    body{font-family:Inter, system-ui, -apple-system, sans-serif; margin:0}
+    /* full-screen blurred backdrop with stronger blur and dim */
+    .backdrop{
+      position:fixed; inset:0; background:linear-gradient(rgba(0,0,0,0.45), rgba(0,0,0,0.45)); backdrop-filter:blur(12px) saturate(1.05); -webkit-backdrop-filter:blur(12px) saturate(1.05);
+      display:flex; align-items:center; justify-content:center; z-index:50;
+    }
+    .cart-modal{ width:min(760px,94%); background:white; border-radius:12px; overflow:hidden; box-shadow:0 10px 30px rgba(0,0,0,.25)}
+    .cart-header{padding:22px 24px; border-bottom:1px solid #f1f1f1; font-family: 'Sesbania', sans-serif}
+    .cart-body{max-height:60vh; overflow:auto; padding:20px}
+    .cart-footer{display:flex; gap:12px; align-items:center; justify-content:space-between; padding:18px; border-top:1px solid #f1f1f1}
+    .sesbania { font-family: 'Sesbania', sans-serif; }
+    .qty-btn{width:34px;height:34px;border-radius:8px;border:1px solid #e6e6e6;background:white}
+  </style>
+</head>
+<body>
+
+  <div class="backdrop" id="backdrop">
+    <div class="cart-modal" role="dialog" aria-modal="true">
+      <div class="cart-header">
+        <div style="display:flex;align-items:center;justify-content:space-between">
+          <div>
+            <div style="font-weight:700">Your Cart</div>
+            <div id="cart-count" style="font-size:13px;color:#6b7280;margin-top:6px">0 Items</div>
+          </div>
+          <button id="cart-close" style="background:#fff;border:1px solid #e6e6e6;width:40px;height:40px;border-radius:999px">✕</button>
+        </div>
+      </div>
+      <div class="cart-body" id="cart-body">
+        <p style="color:#6b7280">Review your items and proceed to checkout when you're ready</p>
+        <div style="height:12px"></div>
+        <a href="#" style="display:inline-block;color:#0f6b5c;font-weight:600;margin-bottom:12px">Enter a Coupon Code</a>
+        <div id="items-list" class="space-y-4 mt-4"></div>
+      </div>
+      <div class="cart-footer">
+        <div style="display:flex;align-items:center;gap:12px">
+          <div style="font-size:13px;color:#6b7280">Subtotal</div>
+        </div>
+        <div style="display:flex;gap:12px;align-items:center">
+          <div id="subtotal" style="font-weight:700">NGN 0.00</div>
+          <button id="clear-cart" style="background:#fff;border:1px solid #e6e6e6;padding:10px 18px;border-radius:10px">Clear Cart</button>
+          <button id="proceed" style="background:#0f6b5c;color:white;padding:10px 22px;border-radius:10px">Proceed</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    function formatCurrency(n){ return 'NGN ' + Number(n).toLocaleString('en-US', {minimumFractionDigits:2}); }
+    function parsePrice(str){ if(!str) return 0; return Number(String(str).replace(/[^0-9.]/g,''))||0 }
+
+    const backdrop = document.getElementById('backdrop');
+    const itemsList = document.getElementById('items-list');
+    const subtotalEl = document.getElementById('subtotal');
+    const cartCount = document.getElementById('cart-count');
+
+    function loadCart(){
+      const cart = JSON.parse(localStorage.getItem('cart')||'[]');
+      itemsList.innerHTML='';
+      if(cart.length===0){ itemsList.innerHTML='<p style="color:#6b7280">Your cart is empty.</p>'; subtotalEl.textContent='NGN 0.00'; cartCount.textContent='0 Items'; return; }
+      let total=0; cart.forEach((it, idx)=>{
+        const row = document.createElement('div'); row.className='item-row'; row.dataset.index = idx;
+        row.style.display='flex'; row.style.alignItems='center'; row.style.justifyContent='space-between';
+        row.innerHTML = `
+          <div style="display:flex;gap:12px;align-items:center">
+            <img src="${it.images && it.images[0] || 'assets/images/imgi_2_1zt7fhmts2.jpg'}" style="width:64px;height:64px;object-fit:cover;border-radius:8px"/>
+            <div>
+              <div class="sesbania" style="font-weight:600">${it.title}</div>
+              <div style="color:#6b7280">${it.price} · ${it.qty} pcs</div>
+            </div>
+          </div>
+          <div style="display:flex;align-items:center;gap:10px">
+            <button class="qty-btn" data-action="dec">−</button>
+            <div>${it.qty}</div>
+            <button class="qty-btn" data-action="inc">+</button>
+            <button data-action="remove" style="background:#fff;border:none;color:#ef4444;margin-left:8px">🗑</button>
+          </div>
+        `;
+        itemsList.appendChild(row);
+        total += parsePrice(it.price) * Number(it.qty||1);
+      });
+      subtotalEl.textContent = formatCurrency(total);
+      cartCount.textContent = `${cart.length} Item${cart.length>1?'s':''}`;
+
+      // attach handlers
+      itemsList.querySelectorAll('[data-action]').forEach(btn=>{
+        btn.addEventListener('click',(e)=>{
+          const action = btn.getAttribute('data-action');
+          const row = btn.closest('.item-row');
+          if(!row) return;
+          const idx = Number(row.dataset.index);
+          const cart = JSON.parse(localStorage.getItem('cart')||'[]');
+          if(action==='inc'){
+            cart[idx].qty = Number(cart[idx].qty||0) + 1;
+          } else if(action==='dec'){
+            cart[idx].qty = Math.max(1, Number(cart[idx].qty||1) - 1);
+          } else if(action==='remove'){
+            cart.splice(idx,1);
+          }
+          localStorage.setItem('cart', JSON.stringify(cart));
+          loadCart();
+        });
+      });
+    }
+
+    document.getElementById('cart-close').addEventListener('click', ()=> history.back());
+    document.getElementById('clear-cart').addEventListener('click', ()=>{ localStorage.setItem('cart','[]'); loadCart(); });
+    document.getElementById('proceed').addEventListener('click', ()=>{ alert('Proceed to checkout — integrate payment flow'); });
+
+    // initial load
+    loadCart();
+  </script>
+</body>
+</html>

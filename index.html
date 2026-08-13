@@ -1,0 +1,649 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Zanova — Premium Teas & Wellness</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<script>
+  tailwind.config = {
+    theme: {
+      extend: {
+        colors: {
+          teal: {
+            DEFAULT: '#0f6b5c',
+            dark: '#0b4f44',
+          },
+        },
+        fontFamily: {
+          sans: ['Inter', 'system-ui', 'sans-serif'],
+        },
+      },
+    },
+  }
+</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<!-- Montserrat as a free fallback similar to Gotham -->
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+  /* Load the provided Sesbania font (place the TTF/WOFF in assets/fonts/) */
+  @font-face {
+    font-family: 'Sesbania';
+    src: url('assets/images/sesbania-regular.ttf') format('truetype');
+    font-weight: 400;
+    font-style: normal;
+    font-display: swap;
+  }
+  body { font-family: 'Inter', sans-serif; }
+  .hero-bg {
+    background-image: linear-gradient(rgba(6,20,16,0.55), rgba(6,20,16,0.75)), url('https://placehold.co/1920x800/0b4f44/e8dcae?text=ZANOVA');
+    background-size: cover;
+    background-position: center;
+  }
+  /* Product titles use Sesbania (provided), fall back to Gotham/Montserrat */
+  .product-card h3, #modal-title {
+    color: #6b7280; /* Tailwind text-gray-500 */
+    font-family: 'Sesbania', 'Gotham', 'Montserrat', 'Inter', sans-serif;
+  }
+
+  /* Use Sesbania for hamburger and menu drawer text */
+  .hamburger-font, #menu-drawer, #menu-drawer nav a, #menu-drawer button {
+    font-family: 'Sesbania', 'Gotham', 'Montserrat', 'Inter', sans-serif;
+  }
+
+  /* Toast check pop animation */
+  @keyframes pop {
+    0% { transform: scale(0.8); opacity: 0; }
+    60% { transform: scale(1.08); opacity: 1; }
+    100% { transform: scale(1); }
+  }
+  #toast-check.pop { animation: pop 420ms cubic-bezier(.2,.9,.3,1); transform-origin: center; }
+</style>
+</head>
+<body class="bg-white text-gray-900">
+
+  <!-- Top utility bar -->
+  <div class="flex items-center justify-between px-6 py-3 border-b border-gray-100">
+    <button class="flex items-center gap-3 border border-gray-300 rounded-full px-3 py-1.5 text-sm text-gray-700 hover:bg-gray-50">
+      <span class="inline-flex items-center justify-center w-7 h-7">
+        <svg viewBox="0 0 24 24" class="w-7 h-7" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+          <circle cx="12" cy="12" r="12" fill="#25D366" />
+          <path fill="#fff" d="M16.67 13.58c-.27-.14-1.6-.79-1.85-.88-.25-.09-.43-.13-.62.14-.18.27-.69.9-.85 1.09-.16.19-.31.21-.58.08-.27-.12-1.03-.38-1.97-1.2-.66-.6-1.12-1.31-1.24-1.5-.13-.2-.01-.31.09-.4.09-.08.2-.2.3-.3.1-.1.14-.18.2-.3.06-.12.03-.22-.02-.31-.05-.09-.48-1.16-.66-1.59-.18-.43-.36-.37-.5-.38-.14-.01-.28-.01-.41-.01-.14 0-.34.05-.52.27-.18.21-.69.75-.69 1.83 0 1.08.7 2.16.8 2.32.1.16 1.44 2.33 3.96 3.68 2.52 1.35 2.35.9 2.63.83.28-.07 1.6-.58 1.83-1.29.22-.7.22-1.1.15-1.2-.07-.1-.24-.15-.46-.27z"/>
+        </svg>
+      </span>
+      <span>Contact Us</span>
+    </button>
+    <div class="flex items-center gap-1 text-sm text-gray-700">
+      <!-- Nigerian flag inside circular avatar -->
+      <span class="inline-flex items-center justify-center w-6 h-6 rounded-full overflow-hidden border border-gray-200 bg-white">
+        <svg viewBox="0 0 3 2" xmlns="http://www.w3.org/2000/svg" class="w-full h-full"><rect width="1" height="2" x="0" y="0" fill="#008751"/><rect width="1" height="2" x="1" y="0" fill="#fff"/><rect width="1" height="2" x="2" y="0" fill="#008751"/></svg>
+      </span>
+      <span class="sr-only">Nigeria</span>
+      <span class="ml-2 text-sm text-gray-700">NGN</span>
+    </div>
+  </div>
+
+  <!-- Nav -->
+  <nav class="flex items-center justify-between px-6 py-4">
+    <button onclick="openMenu()" class="text-gray-700 hamburger-font" aria-label="Open menu">
+      <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5M3.75 17.25h16.5" />
+      </svg>
+    </button>
+    <a href="#" class="flex items-center">
+      <div class="w-9 h-9 rounded-full bg-black flex items-center justify-center">
+        <span class="text-[10px] text-yellow-500 font-bold tracking-widest">Z</span>
+      </div>
+    </a>
+    <a href="#" class="relative text-gray-700" aria-label="Cart">
+      <!-- Modern shopping bag icon -->
+      <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M6 2h12l1.5 4H4.5L6 2z" />
+        <path d="M3.5 6h17l-1 13.5a1.5 1.5 0 01-1.5 1.5h-11a1.5 1.5 0 01-1.5-1.5L3.5 6z" />
+        <path d="M9 11a3 3 0 016 0" />
+      </svg>
+      <span class="absolute -top-2 -right-2 bg-teal text-white text-[10px] w-4 h-4 rounded-full flex items-center justify-center">1</span>
+    </a>
+  </nav>
+
+  <!-- Mobile menu drawer -->
+  <div id="menu-overlay" class="fixed inset-0 bg-black/40 z-40 opacity-0 pointer-events-none transition-opacity duration-300" onclick="closeMenu()"></div>
+  <aside id="menu-drawer" class="fixed top-0 left-0 h-full w-full sm:w-80 bg-white z-50 -translate-x-full transition-transform duration-300 flex flex-col">
+    <div class="flex items-center justify-between px-6 py-5">
+      <div class="w-9 h-9 rounded-full bg-black flex items-center justify-center">
+        <span class="text-[10px] text-yellow-500 font-bold tracking-widest">Z</span>
+      </div>
+      <button onclick="closeMenu()" class="w-9 h-9 rounded-full border border-gray-200 flex items-center justify-center text-gray-600 hover:bg-gray-50" aria-label="Close menu">
+        <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+        </svg>
+      </button>
+    </div>
+
+    <nav class="flex-1 px-6 py-2 space-y-6">
+      <a href="#" class="block text-gray-800 text-base">Home</a>
+      <a href="#all-products" class="block text-gray-800 text-base">Shop</a>
+      <a href="#categories" class="block text-gray-800 text-base">Categories</a>
+      <a href="#" class="block text-gray-800 text-base">More Information</a>
+    </nav>
+
+    <div class="px-6 pb-8">
+      <a href="#" class="inline-flex items-center justify-center w-9 h-9 rounded-full border border-gray-200 text-gray-600 hover:bg-gray-50 mb-6">
+        <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
+          <rect x="3" y="3" width="18" height="18" rx="5" />
+          <circle cx="12" cy="12" r="4" />
+          <circle cx="17.5" cy="6.5" r="1" fill="currentColor" stroke="none" />
+        </svg>
+      </a>
+      <p class="text-sm text-gray-500">© 2026 · Zanova</p>
+      <p class="text-sm text-gray-500 mt-1">Powered by <span class="font-semibold text-gray-700">Catlog</span></p>
+    </div>
+  </aside>
+
+  <script>
+    function openMenu() {
+      document.getElementById('menu-drawer').classList.remove('-translate-x-full');
+      document.getElementById('menu-overlay').classList.remove('opacity-0', 'pointer-events-none');
+      document.body.classList.add('overflow-hidden');
+    }
+    function closeMenu() {
+      document.getElementById('menu-drawer').classList.add('-translate-x-full');
+      document.getElementById('menu-overlay').classList.add('opacity-0', 'pointer-events-none');
+      document.body.classList.remove('overflow-hidden');
+    }
+  </script>
+
+  <!-- Hero -->
+  <section class="hero-bg relative flex flex-col items-center justify-center px-6 py-14 sm:py-24 md:py-32 text-center">
+    <h1 class="text-2xl sm:text-3xl md:text-5xl font-semibold text-white max-w-3xl leading-snug sm:leading-tight">
+      Hi there! 👋 What are you shopping for today?
+    </h1>
+    <div class="mt-6 sm:mt-10 w-full max-w-xl relative">
+      <input
+        type="text"
+        placeholder="Find Products"
+        class="w-full rounded-full px-6 py-4 pr-14 text-gray-700 placeholder-gray-400 outline-none shadow-lg"
+      />
+      <button class="absolute right-2 top-1/2 -translate-y-1/2 w-10 h-10 flex items-center justify-center rounded-full hover:bg-gray-100">
+        <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-4.35-4.35m0 0A7.5 7.5 0 104.5 4.5a7.5 7.5 0 0012.15 12.15z" />
+        </svg>
+      </button>
+    </div>
+  </section>
+
+  <!-- Product Detail Modal -->
+  <div id="product-modal" class="fixed inset-0 bg-black/80 z-50 hidden">
+    <div class="bg-white w-full h-full overflow-hidden grid grid-cols-1 lg:grid-cols-2">
+      <!-- Left: Image gallery (full height) -->
+      <div class="relative w-full h-full bg-gray-100">
+        <button id="modal-prev" class="absolute left-6 top-1/2 -translate-y-1/2 bg-white/90 rounded-full w-10 h-10 flex items-center justify-center shadow">‹</button>
+        <img id="modal-main-image" src="" alt="" class="w-full h-full object-cover" />
+        <button id="modal-next" class="absolute right-6 top-1/2 -translate-y-1/2 bg-white/90 rounded-full w-10 h-10 flex items-center justify-center shadow">›</button>
+        <div class="absolute left-6 bottom-6 flex gap-3" id="modal-thumbs"></div>
+      </div>
+
+      <!-- Right: Details (full height, scrollable) -->
+      <div class="h-full overflow-y-auto p-10">
+        <div class="flex items-start justify-between">
+          <div>
+            <h3 id="modal-title" class="text-2xl font-semibold text-gray-800"></h3>
+            <p id="modal-badges" class="mt-2 text-sm text-gray-500"></p>
+          </div>
+          <button id="modal-close" aria-label="Close" class="text-gray-500">✕</button>
+        </div>
+
+        <p id="modal-price" class="mt-6 text-xl font-semibold text-gray-800"></p>
+        <div id="modal-desc" class="mt-4 text-sm text-gray-700"></div>
+
+        <div class="mt-6" id="modal-add-area">
+          <label class="sr-only">Quantity</label>
+          <div class="flex items-center gap-3">
+            <input id="modal-qty" type="number" value="1" min="1" class="w-20 rounded border px-3 py-2" />
+            <button id="modal-add" class="flex-1 bg-teal text-white rounded-full px-6 py-3">Add To Cart</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Add-to-cart toast -->
+  <div id="cart-toast" class="fixed inset-0 z-60 hidden items-center justify-center pointer-events-none">
+    <div class="bg-white rounded-xl shadow-xl px-8 py-6 flex items-center gap-4 pointer-events-auto">
+      <svg id="toast-check" width="48" height="48" viewBox="0 0 52 52" class="text-green-600">
+        <circle cx="26" cy="26" r="25" fill="none" stroke="#e6f4ee" stroke-width="2" />
+        <path id="toast-checkpath" d="M14 27 L22 34 L38 18" fill="none" stroke="#10b981" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" stroke-dasharray="60" stroke-dashoffset="60" />
+      </svg>
+      <div>
+        <div class="text-gray-800 font-semibold">Added to cart</div>
+        <div class="text-sm text-gray-500">We'll save it for you in the cart.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Cart overlay -->
+  <div id="cart-overlay" class="fixed inset-0 bg-black/50 z-55 hidden items-center justify-center p-6">
+    <div class="bg-white w-full max-w-3xl rounded-2xl overflow-hidden p-6">
+      <div class="flex items-center justify-between">
+        <h3 class="text-lg font-semibold">Your Cart</h3>
+        <button id="cart-close" class="text-gray-600">✕</button>
+      </div>
+      <div id="cart-items" class="mt-6 space-y-4">
+        <!-- items inserted here -->
+      </div>
+      <div class="mt-6 text-right">
+        <button id="cart-checkout" class="bg-teal text-white rounded-full px-6 py-3">Checkout</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Hottest Items -->
+  <section id="all-products" class="px-6 md:px-10 py-14 max-w-7xl mx-auto">
+    <div class="flex items-center justify-between mb-8">
+      <h2 class="text-2xl font-semibold">Hottest Items</h2>
+      <a href="product.html" class="flex items-center gap-2 border border-gray-300 rounded-full px-4 py-2 text-sm hover:bg-gray-50">
+        All Products
+        <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M17 8l4 4m0 0l-4 4m4-4H3" />
+        </svg>
+      </a>
+    </div>
+
+      <div class="grid grid-cols-2 lg:grid-cols-3 gap-x-4 gap-y-8 sm:gap-8" id="hottest-grid">
+      <!-- Product 1 -->
+      <div class="product-card" data-title="Premium Jasmine Green Tea" data-price="NGN 40,000.00" data-images="assets/images/imgi_2_1zt7fhmts2.jpg,assets/images/imgi_3_v295aqr3tb.jpg" data-desc="Enjoy the delicate floral aroma of our Premium Jasmine Green Tea. Made from handpicked leaves scented with jasmine flowers for a soothing, refined cup. Rich in antioxidants and perfect for daily rituals.">
+        <div class="relative aspect-square rounded-2xl overflow-hidden bg-gray-50 w-full max-w-[340px]">
+          <img src="assets/images/imgi_2_1zt7fhmts2.jpg" alt="Premium Jasmine Green Tea" class="w-full h-full object-cover" />
+          <div class="absolute bottom-3 left-3 right-3 bg-teal text-white rounded-full px-4 py-2 flex items-center justify-between text-sm font-medium shadow-lg">
+            <span>1 Item (NGN 40,000.00)</span>
+            <span class="w-7 h-7 rounded-full bg-white/20 flex items-center justify-center">
+              <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M17 8l4 4m0 0l-4 4m4-4H3" />
+              </svg>
+            </span>
+          </div>
+        </div>
+        <h3 class="mt-3 text-gray-800 text-sm sm:text-base">Premium Jasmine Green Tea</h3>
+        <p class="font-semibold text-sm sm:text-base">NGN 40,000.00</p>
+        <button class="mt-3 w-full border border-gray-300 rounded-full py-2 sm:py-2.5 text-xs sm:text-sm font-medium flex items-center justify-center gap-2 hover:bg-gray-50">
+          Edit Selection
+          <span class="bg-teal text-white text-[10px] w-4 h-4 rounded-full flex items-center justify-center">1</span>
+        </button>
+      </div>
+
+      <!-- Product 2 -->
+      <div class="product-card" data-title="Japanese Sencha Loose Leaf Tea" data-price="NGN 40,000.00" data-images="assets/images/imgi_3_v295aqr3tb.jpg,assets/images/imgi_2_1zt7fhmts2.jpg" data-desc="Enjoy the fresh, smooth taste of premium Japanese Sencha Green Tea. Naturally rich in antioxidants and L-theanine, it helps support overall wellness and calm focus.">
+        <div class="relative aspect-square rounded-2xl overflow-hidden bg-gray-50 w-full max-w-[340px]">
+          <img src="assets/images/imgi_3_v295aqr3tb.jpg" alt="Japanese Sencha Loose Leaf Tea" class="w-full h-full object-cover" />
+          <button class="absolute bottom-3 rigfht-3 w-8 h-8 rounded-full bg-white/80 flex items-center justify-center">
+            <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M4 5a1 1 0 011-1h3l2-2h4l2 2h3a1 1 0 011 1v13a2 2 0 01-2 2H6a2 2 0 01-2-2V5z" />
+              <circle cx="12" cy="12" r="3" />
+            </svg>
+          </button>
+        </div>
+        <h3 class="mt-3 text-gray-800 text-sm sm:text-base">Japanese Sencha Loose Leaf Tea</h3>
+        <p class="font-semibold text-sm sm:text-base">NGN 40,000.00</p>
+        <button class="mt-3 w-full border border-gray-300 rounded-full py-2 sm:py-2.5 text-xs sm:text-sm font-medium hover:bg-gray-50">Add To Cart</button>
+      </div>
+
+      <!-- Product 3 -->
+      <div class="product-card" data-title="EMS Smart Abdominal Sculpting Belt" data-price="NGN 80,000.00" data-images="assets/images/imgi_4_bg5y5amwwm.jpg" data-desc="Advanced EMS abdominal sculpting belt with multiple intensity levels. Designed for short, daily sessions to stimulate core muscles and support toning when combined with exercise.">
+        <div class="relative aspect-square rounded-2xl overflow-hidden bg-gray-50 w-full max-w-[340px]">
+          <img src="assets/images/imgi_4_bg5y5amwwm.jpg" alt="EMS Smart Abdominal Sculpting Belt" class="w-full h-full object-cover" />
+        </div>
+        <h3 class="mt-3 text-gray-800 text-sm sm:text-base">EMS Smart Abdominal Sculpting Belt</h3>
+        <p class="font-semibold text-sm sm:text-base">NGN 80,000.00</p>
+        <button class="mt-3 w-full border border-gray-300 rounded-full py-2 sm:py-2.5 text-xs sm:text-sm font-medium hover:bg-gray-50">Add To Cart</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- Categories -->
+  <section id="categories" class="px-6 md:px-10 py-6 max-w-7xl mx-auto">
+    <div class="flex items-center justify-between mb-8">
+      <h2 class="text-2xl font-semibold">Categories</h2>
+      <div class="flex items-center gap-2">
+        <button class="w-9 h-9 rounded-full border border-gray-300 flex items-center justify-center hover:bg-gray-50">
+          <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 text-teal" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+          </svg>
+        </button>
+        <button class="w-9 h-9 rounded-full border border-gray-300 flex items-center justify-center hover:bg-gray-50">
+          <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 text-teal" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M14 5l7 7m0 0l-7 7m7-7H3" />
+          </svg>
+        </button>
+      </div>
+    </div>
+
+    <div class="grid grid-cols-1 sm:grid-cols-1 lg:grid-cols-1 gap-6">
+      <div class="relative rounded-2xl overflow-hidden h-64">
+        <img src="assets/images/imgi_3_v295aqr3tb.jpg" alt="Featured Tea" class="w-full h-full object-cover" />
+        <div class="absolute inset-0 bg-black/25 flex items-end p-5">
+          <span class="text-white text-xl font-semibold">Featured Tea</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Newsletter / signature band -->
+  <section class="bg-teal-dark text-white px-6 md:px-10 py-16 mt-16">
+    <div class="max-w-4xl mx-auto text-center">
+      <h2 class="text-2xl md:text-3xl font-semibold mb-3">Steeped fresh, shipped with care</h2>
+      <p class="text-white/80 mb-8">Join the list for restock alerts, brewing guides, and first access to seasonal harvests.</p>
+      <form class="flex flex-col sm:flex-row gap-3 max-w-md mx-auto" onsubmit="return false;">
+        <input type="email" placeholder="Your email address" class="flex-1 rounded-full px-5 py-3 text-gray-800 outline-none" />
+        <button class="bg-white text-teal-dark font-semibold rounded-full px-6 py-3 hover:bg-gray-100">Subscribe</button>
+      </form>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="bg-gray-50 px-6 md:px-10 py-14">
+    <div class="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-10">
+      <div>
+        <div class="w-9 h-9 rounded-full bg-black flex items-center justify-center mb-5">
+          <span class="text-[10px] text-yellow-500 font-bold tracking-widest">Z</span>
+        </div>
+        <h3 class="font-semibold text-lg mb-2">Refund Policy</h3>
+        <p class="text-sm text-gray-600 leading-relaxed">
+          Refunds and returns are accepted only for items that arrive damaged, defective, or incorrect.
+          Customers must report any issue within 24 hours of delivery with clear photos or videos. Due to
+          the nature of our products, opened teas and used wellness devices are not eligible for return
+          unless faulty.
+          <button class="text-teal font-medium block mt-1">Show more</button>
+        </p>
+      </div>
+
+      <div>
+        <h3 class="font-semibold text-lg mb-4">Learn More</h3>
+        <ul class="space-y-3 text-sm text-gray-600">
+          <li><a href="#" class="hover:text-teal">Delivery Fees</a></li>
+          <li><a href="#" class="hover:text-teal">Return and Refund Policy</a></li>
+          <li><a href="#" class="hover:text-teal">More Information</a></li>
+        </ul>
+      </div>
+
+      <div>
+        <h3 class="font-semibold text-lg mb-4">Supported Payment Methods</h3>
+        <ul class="space-y-3 text-sm text-gray-700">
+          <li class="flex items-center gap-2">
+            <span class="w-5 h-5 rounded-full bg-teal-dark text-white flex items-center justify-center text-[10px]">✓</span>
+            Cards (Mastercard, Visa, Verve)
+          </li>
+          <li class="flex items-center gap-2">
+            <span class="w-5 h-5 rounded-full bg-teal-dark text-white flex items-center justify-center text-[10px]">✓</span>
+            Bank Transfers
+          </li>
+          <li class="flex items-center gap-2">
+            <span class="w-5 h-5 rounded-full bg-teal-dark text-white flex items-center justify-center text-[10px]">✓</span>
+            Direct Debit
+          </li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between border-t border-gray-200 mt-10 pt-6 gap-4">
+      <a href="#" class="text-gray-500 hover:text-teal">
+        <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
+          <rect x="3" y="3" width="18" height="18" rx="5" />
+          <circle cx="12" cy="12" r="4" />
+          <circle cx="17.5" cy="6.5" r="1" fill="currentColor" stroke="none" />
+        </svg>
+      </a>
+      <p class="text-sm text-gray-500">© 2026 · Zanova &nbsp;·&nbsp; Powered by <span class="font-semibold text-gray-700">Catlog</span></p>
+    </div>
+  </footer>
+
+  <!-- Sticky cart bar (hidden when cart empty) -->
+  <div id="sticky-cart-bar" class="fixed bottom-4 right-4 z-70 hidden">
+    <button id="sticky-cart-btn" class="bg-teal text-white rounded-full pl-5 pr-2 py-2.5 flex items-center gap-3 shadow-xl hover:bg-teal-dark">
+      <span id="sticky-cart-text" class="text-sm font-medium">1 Item (NGN 40,000.00)</span>
+      <span class="w-8 h-8 rounded-full bg-white/20 flex items-center justify-center">
+        <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M17 8l4 4m0 0l-4 4m4-4H3" />
+        </svg>
+      </span>
+    </button>
+  </div>
+
+  <script>
+    // Product modal, cart and toast logic
+    (function(){
+      const modal = document.getElementById('product-modal');
+      const mainImage = document.getElementById('modal-main-image');
+      let thumbsContainer;
+      const titleEl = document.getElementById('modal-title');
+      const priceEl = document.getElementById('modal-price');
+      const descEl = document.getElementById('modal-desc');
+      const qtyEl = document.getElementById('modal-qty');
+      const modalClose = document.getElementById('modal-close');
+      const modalPrev = document.getElementById('modal-prev');
+      const modalNext = document.getElementById('modal-next');
+      const cartToast = document.getElementById('cart-toast');
+      const toastPath = document.getElementById('toast-checkpath');
+      const toastSvg = document.getElementById('toast-check');
+      const cartOverlay = document.getElementById('cart-overlay');
+      const cartItemsEl = document.getElementById('cart-items');
+      const cartClose = document.getElementById('cart-close');
+
+      let images = [];
+      let current = 0;
+      let currentProduct = null;
+      let cart = JSON.parse(localStorage.getItem('cart') || '[]');
+
+      function openProduct(el){
+        currentProduct = el;
+        titleEl.textContent = el.dataset.title || '';
+        priceEl.textContent = el.dataset.price || '';
+        descEl.textContent = el.dataset.desc || '';
+        images = (el.dataset.images||'').split(',').filter(Boolean);
+        current = 0;
+        renderImages();
+        renderAddArea();
+        modal.classList.remove('hidden');
+        modal.classList.add('flex');
+        document.body.classList.add('overflow-hidden');
+      }
+
+      function closeProduct(){
+        modal.classList.add('hidden');
+        modal.classList.remove('flex');
+        document.body.classList.remove('overflow-hidden');
+      }
+
+      function renderImages(){
+        if(!images.length) return;
+          mainImage.src = images[current];
+          thumbsContainer = document.getElementById('modal-thumbs');
+          thumbsContainer.innerHTML = '';
+          images.forEach((src, i)=>{
+            const b = document.createElement('button');
+            b.className = 'w-16 h-16 rounded overflow-hidden border';
+            b.innerHTML = `<img src="${src}" class="w-full h-full object-cover"/>`;
+            b.onclick = ()=>{ current = i; renderImages(); };
+            thumbsContainer.appendChild(b);
+          });
+      }
+
+      function isInCart(title){
+        return cart.findIndex(it=>it.title===title) !== -1;
+      }
+
+      function renderAddArea(){
+        const addBtnContainer = document.getElementById('modal-add').parentNode;
+        // Clear current buttons in that area
+        addBtnContainer.innerHTML = '';
+        const qtyInput = document.createElement('input');
+        qtyInput.id = 'modal-qty';
+        qtyInput.type = 'number';
+        qtyInput.value = 1;
+        qtyInput.min = 1;
+        qtyInput.className = 'w-20 rounded border px-3 py-2';
+        addBtnContainer.appendChild(qtyInput);
+
+        const title = currentProduct.dataset.title;
+        if(isInCart(title)){
+          const removeBtn = document.createElement('button');
+          removeBtn.className = 'ml-3 flex-1 border border-gray-300 rounded-full py-2 px-6 text-sm';
+          removeBtn.textContent = 'Remove from Cart';
+          removeBtn.addEventListener('click', ()=>{ removeFromCart(title); renderAddArea(); });
+
+          const openBtn = document.createElement('button');
+          openBtn.className = 'ml-3 flex-1 bg-teal text-white rounded-full py-2 px-6 text-sm';
+          openBtn.textContent = 'Open Cart';
+          openBtn.addEventListener('click', ()=>{ openCart(); });
+
+          addBtnContainer.appendChild(removeBtn);
+          addBtnContainer.appendChild(openBtn);
+        } else {
+          const addBtn = document.createElement('button');
+          addBtn.className = 'ml-3 flex-1 bg-teal text-white rounded-full px-6 py-3';
+          addBtn.id = 'modal-add';
+          addBtn.textContent = 'Add To Cart';
+          addBtn.addEventListener('click', ()=>{ addToCart(title, Number(qtyInput.value||1)); });
+          addBtnContainer.appendChild(addBtn);
+        }
+      }
+
+      function addToCart(title, qty){
+        const existing = cart.find(it=>it.title===title);
+        const price = currentProduct.dataset.price || '';
+        const images = (currentProduct.dataset.images||'').split(',').filter(Boolean);
+        const desc = currentProduct.dataset.desc || '';
+        if(existing){ existing.qty += qty; }
+        else{ cart.push({ title, qty, price, images, desc }); }
+        localStorage.setItem('cart', JSON.stringify(cart));
+        showToast();
+        renderAddArea();
+        updateStickyCartBar();
+      }
+
+      function removeFromCart(title){
+        cart = cart.filter(it=>it.title!==title);
+        localStorage.setItem('cart', JSON.stringify(cart));
+        renderCartItems();
+        updateStickyCartBar();
+      }
+
+      function showToast(){
+        cartToast.classList.remove('hidden');
+        cartToast.classList.add('flex');
+        if(toastSvg) toastSvg.classList.add('pop');
+        // animate check
+        toastPath.style.transition = 'stroke-dashoffset 400ms ease-out';
+        toastPath.style.strokeDashoffset = '0';
+        setTimeout(()=>{
+          // hide after animation
+          cartToast.classList.add('hidden');
+          cartToast.classList.remove('flex');
+          if(toastSvg) toastSvg.classList.remove('pop');
+          toastPath.style.transition = 'none';
+          toastPath.style.strokeDashoffset = '60';
+          // update cart UI in background
+          renderCartItems();
+        }, 900);
+      }
+
+      function openCart(){
+        // navigate to dedicated cart page
+        window.location = 'cart.html';
+      }
+
+      function closeCart(){
+        cartOverlay.classList.add('hidden');
+        document.body.classList.remove('overflow-hidden');
+      }
+
+      function renderCartItems(){
+        cartItemsEl.innerHTML = '';
+        if(cart.length===0){ cartItemsEl.innerHTML = '<p class="text-sm text-gray-500">Your cart is empty.</p>'; return; }
+        cart.forEach(it=>{
+          const row = document.createElement('div');
+          row.className = 'flex items-center justify-between';
+          row.innerHTML = `<div class="flex items-center gap-3"><img src="${it.images[0]}" class="w-16 h-16 object-cover rounded"/><div><div class="font-medium">${it.title}</div><div class="text-sm text-gray-500">${it.price} · ${it.qty} pcs</div></div></div>`;
+          const remove = document.createElement('button');
+          remove.className = 'text-sm text-red-600';
+          remove.textContent = 'Remove';
+          remove.addEventListener('click', ()=>{ cart = cart.filter(c=>c.title!==it.title); renderCartItems(); renderAddArea(); });
+          row.appendChild(remove);
+          cartItemsEl.appendChild(row);
+        });
+        // ensure sticky bar reflects latest cart
+        updateStickyCartBar();
+      }
+
+      function parsePrice(str){
+        if(!str) return 0;
+        // remove non-numeric except dot
+        const num = Number(String(str).replace(/[^0-9.]/g, ''));
+        return isNaN(num)?0:num;
+      }
+
+      function formatCurrency(n){
+        return 'NGN ' + Number(n).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+      }
+
+      function updateStickyCartBar(){
+        const bar = document.getElementById('sticky-cart-bar');
+        const text = document.getElementById('sticky-cart-text');
+        if(!bar || !text) return;
+        if(cart.length===0){
+          bar.classList.add('hidden');
+          bar.classList.remove('flex');
+          return;
+        }
+        // compute total qty and price
+        const totalQty = cart.reduce((s,it)=>s+Number(it.qty||0), 0);
+        const totalPrice = cart.reduce((s,it)=>s + parsePrice(it.price) * Number(it.qty||0), 0);
+        text.textContent = `${totalQty} Item${totalQty>1?'s':''} (${formatCurrency(totalPrice)})`;
+        bar.classList.remove('hidden');
+        bar.classList.add('flex');
+      }
+
+      modalClose.addEventListener('click', closeProduct);
+      modalPrev.addEventListener('click', ()=>{ if(images.length){ current = (current-1+images.length)%images.length; renderImages(); }});
+      modalNext.addEventListener('click', ()=>{ if(images.length){ current = (current+1)%images.length; renderImages(); }});
+
+      // open when product clicked
+      document.querySelectorAll('.product-card').forEach(card=>{
+        card.addEventListener('click', (e)=>{
+          // ignore clicks on buttons inside
+          if(e.target.tagName.toLowerCase()==='button') return;
+          openProduct(card);
+        });
+      });
+
+      // Wire grid-level "Add To Cart" buttons to add directly and show animation
+      document.querySelectorAll('.product-card button').forEach(btn=>{
+        if(/add to cart/i.test(btn.textContent || '')){
+          btn.addEventListener('click', (e)=>{
+            e.stopPropagation();
+            const card = btn.closest('.product-card');
+            if(!card) return;
+            const title = card.dataset.title;
+            // set currentProduct so renderAddArea and other helpers work
+            currentProduct = card;
+            // default qty 1 for grid add
+            addToCart(title, 1);
+          });
+        }
+      });
+
+      // close on overlay click
+      modal.addEventListener('click', (e)=>{ if(e.target===modal) closeProduct(); });
+
+      // cart overlay events
+      cartClose.addEventListener('click', ()=>{ closeCart(); });
+      cartOverlay.addEventListener('click', (e)=>{ if(e.target===cartOverlay) closeCart(); });
+      // sticky cart button
+      const stickyBtn = document.getElementById('sticky-cart-btn');
+      if(stickyBtn) stickyBtn.addEventListener('click', ()=>{ openCart(); });
+      // initialize sticky bar state
+      updateStickyCartBar();
+    })();
+  </script>
+</body>
+</html>
