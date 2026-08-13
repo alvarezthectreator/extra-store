@@ -570,7 +570,7 @@
           const remove = document.createElement('button');
           remove.className = 'text-sm text-red-600';
           remove.textContent = 'Remove';
-          remove.addEventListener('click', ()=>{ cart = cart.filter(c=>c.title!==it.title); renderCartItems(); renderAddArea(); });
+          remove.addEventListener('click', ()=>{ removeFromCart(it.title); renderAddArea(); });
           row.appendChild(remove);
           cartItemsEl.appendChild(row);
         });
