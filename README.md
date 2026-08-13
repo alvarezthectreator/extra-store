@@ -1,6 +1,6 @@
 # extra-store
 
-This is a small static storefront prototype for Zanova — built with plain HTML, Tailwind CSS, and small client-side JavaScript.
+This is a small static storefront prototype for extra store — built with plain HTML, Tailwind CSS, and small client-side JavaScript.
 
 Quick Start
 1. Serve locally:
@@ -16,7 +16,7 @@ python3 -m http.server 8000
 - `cart.html` — cart modal page (reads cart from localStorage)
 
 Codespaces
-- Open in GitHub Codespaces: https://github.com/codespaces/new/alvarezthectreator/extra-store
+ - Open in GitHub Codespaces: https://github.com/codespaces/new/alvarezthectreator/extra-store
 
 Push to GitHub
 If you want me to push these files to your GitHub repo, run these commands locally (or allow me to run them with network access):
